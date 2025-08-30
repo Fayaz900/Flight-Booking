@@ -11,7 +11,6 @@ import {
 
 const FlightCard = ({ flight }) => {
   const [open, setOpen] = useState(false);
-
   const handleOpen = () => setOpen(!open);
 
   const depTime = new Date(flight.departure).toLocaleTimeString([], {
@@ -28,11 +27,11 @@ const FlightCard = ({ flight }) => {
   return (
     <>
       {/* Flight Card */}
-      <div className="bg-white rounded-2xl shadow-md border hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex justify-between overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md border hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col lg:flex-row justify-between overflow-hidden">
         {/* Left - Flight Info */}
         <div className="p-4 flex-1">
           {/* Airline Info */}
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center flex-wrap">
             <img
               src={flight.logo}
               alt={flight.airline}
@@ -40,16 +39,18 @@ const FlightCard = ({ flight }) => {
             />
             <div>
               <p className="font-semibold text-gray-800">{flight.airline}</p>
-              <p className="text-gray-500 text-sm">{flight.code || "ET652"} | Economy</p>
+              <p className="text-gray-500 text-sm">
+                {flight.code || "ET652"} | Economy
+              </p>
             </div>
           </div>
 
           {/* Timing */}
-          <div className="flex justify-between items-center mt-6 px-2">
+          <div className="flex justify-between items-center mt-6 px-2 flex-col sm:flex-row gap-4">
             {/* Departure */}
-            <div className="text-left">
+            <div className="text-center sm:text-left">
               <p className="text-xl font-bold">{depTime}</p>
-              <p className="text-gray-500 text-sm flex items-center gap-1">
+              <p className="text-gray-500 text-sm flex items-center gap-1 justify-center sm:justify-start">
                 <FaPlaneDeparture className="text-blue-600" /> {flight.from}
               </p>
             </div>
@@ -57,9 +58,9 @@ const FlightCard = ({ flight }) => {
             {/* Flight Path */}
             <div className="text-center">
               <div className="flex items-center justify-center gap-2">
-                <span className="h-[2px] w-16 bg-gray-300"></span>
+                <span className="h-[2px] w-12 sm:w-16 bg-gray-300"></span>
                 <MdFlight className="text-blue-600 text-xl rotate-90" />
-                <span className="h-[2px] w-16 bg-gray-300"></span>
+                <span className="h-[2px] w-12 sm:w-16 bg-gray-300"></span>
               </div>
               <p className="text-gray-500 text-xs mt-1">
                 Total Time: {flight.duration}
@@ -67,9 +68,9 @@ const FlightCard = ({ flight }) => {
             </div>
 
             {/* Arrival */}
-            <div className="text-right">
+            <div className="text-center sm:text-right">
               <p className="text-xl font-bold">{arrTime}</p>
-              <p className="text-gray-500 text-sm flex items-center gap-1 justify-end">
+              <p className="text-gray-500 text-sm flex items-center gap-1 justify-center sm:justify-end">
                 {flight.to} <FaPlaneArrival className="text-blue-600" />
               </p>
             </div>
@@ -77,7 +78,7 @@ const FlightCard = ({ flight }) => {
         </div>
 
         {/* Right - Price & Actions */}
-        <div className="bg-gray-50 border-l rounded-r-2xl p-6 w-72 flex flex-col justify-center text-center">
+        <div className="bg-gray-50 border-t lg:border-t-0 lg:border-l rounded-b-2xl lg:rounded-r-2xl p-4 sm:p-6 w-full lg:w-72 flex flex-col justify-center text-center">
           <p className="line-through text-gray-400 text-sm">
             {flight.currency || "INR"} {flight.oldPrice}
           </p>
@@ -104,6 +105,7 @@ const FlightCard = ({ flight }) => {
         </div>
       </div>
 
+      {/* Modal */}
       <Dialog open={open} handler={handleOpen} size="lg">
         <DialogHeader>
           <div className="flex items-center gap-3">
@@ -122,7 +124,7 @@ const FlightCard = ({ flight }) => {
         </DialogHeader>
         <DialogBody divider className="space-y-4">
           {/* Departure & Arrival */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
               <p className="text-lg font-semibold">{depTime}</p>
               <p className="text-gray-500 text-sm">{depDate}</p>
@@ -132,7 +134,7 @@ const FlightCard = ({ flight }) => {
               <MdFlight className="text-blue-600 text-2xl rotate-90 mx-auto" />
               <p className="text-sm text-gray-500">{flight.duration}</p>
             </div>
-            <div className="text-right">
+            <div>
               <p className="text-lg font-semibold">{arrTime}</p>
               <p className="text-gray-500 text-sm">{arrDate}</p>
               <p className="text-gray-600">{flight.to}</p>

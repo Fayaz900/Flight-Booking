@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: [
     "./index.html",
@@ -21,9 +22,6 @@ theme: {
           '0%': { transform: 'translateY(-100%)' },
           '100%': { transform: 'translateY(100%)' },
         },
-      },
-      colors: {
-        'brand-orange': '#ff5000',
       },
        fontFamily: {
         montserrat: ['Montserrat', 'sans-serif'],

@@ -1,4 +1,4 @@
-import { Card, Typography, Checkbox, Radio, Button, IconButton } from "@material-tailwind/react";
+import { Card, Typography, Checkbox, Button, IconButton } from "@material-tailwind/react";
 import { MdFlight, MdAttachMoney, MdAirlines, MdAccessTime, MdClear } from "react-icons/md";
 
 const SidebarFilters = ({ filters, setFilters, flights }) => {
@@ -16,7 +16,10 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
   const maxPrice = Math.max(...prices);
 
   return (
-    <Card className="w-72 bg-white p-5 rounded-2xl shadow-lg space-y-8">
+    <Card
+      className="w-72 bg-white p-5 rounded-2xl shadow-lg space-y-8 
+             max-h-[85vh] overflow-y-auto"
+    >
       {/* Price Range */}
       <div>
         <Typography
@@ -107,7 +110,6 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
           );
         })}
       </div>
-
       {/* Departure Time */}
       <div>
         <div className="flex justify-between items-center mb-3">
@@ -130,18 +132,31 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
             </IconButton>
           )}
         </div>
-        {["00-06", "06-12", "12-18", "18-24"].map((range) => (
-          <Radio
-            key={range}
-            name="departureRange"
-            value={range}
-            label={range}
-            color="blue"
-            checked={filters.departureRange === range}
-            onChange={handleChange}
-          />
-        ))}
+
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { range: "00-06", icon: "🌙" },
+            { range: "06-12", icon: "🌅" },
+            { range: "12-18", icon: "☀️" },
+            { range: "18-24", icon: "🌙" },
+          ].map(({ range, icon }) => (
+            <Button
+              key={range}
+              variant={filters.departureRange === range ? "filled" : "outlined"}
+              color="blue"
+              className="flex flex-col items-center py-4 rounded-xl"
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, departureRange: range }))
+              }
+            >
+              <span className="text-2xl">{icon}</span>
+              <span className="text-sm mt-1">{range}</span>
+            </Button>
+          ))}
+        </div>
       </div>
+
+
 
       {/* Fare Type */}
       <div>
@@ -172,7 +187,7 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
         >
           <MdAirlines className="text-purple-600 text-xl" /> Airlines
         </Typography>
-        {["Etihad Airways", "Qatar Airways", "IndiGo","Emirates"].map((airline) => (
+        {[...new Set(flights.map((f) => f.airline))].map((airline) => (
           <Checkbox
             key={airline}
             label={airline}
@@ -214,25 +229,31 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
             </IconButton>
           )}
         </div>
-        {["0-4", "4-8", "8-12", "12+"].map((range) => (
-          <Radio
-            key={range}
-            name="layoverRange"
-            value={range}
-            label={range}
-            color="blue"
-            checked={filters.layoverRange === range}
-            onChange={handleChange}
-          />
-        ))}
+
+        <div className="grid grid-cols-2 gap-3">
+          {["0-5", "5-10", "10-15", "15-24"].map((range) => (
+            <Button
+              key={range}
+              variant={filters.layoverRange === range ? "filled" : "outlined"}
+              color="blue"
+              className="flex items-center justify-center py-4 rounded-xl"
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, layoverRange: range }))
+              }
+            >
+              <span className="text-sm">{range}</span>
+            </Button>
+          ))}
+        </div>
       </div>
+
 
       {/* Layover Airports */}
       <div>
         <Typography variant="h6" className="text-gray-800 mb-3">
           Layover Airports
         </Typography>
-        {["Dubai", "Doha", "Hyderabad"].map((ap) => (
+        {[...new Set(flights.map((f) => f.layover).filter(Boolean))].map((ap) => (
           <Checkbox
             key={ap}
             label={ap}
@@ -254,6 +275,7 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
           />
         ))}
       </div>
+
     </Card>
   );
 };
