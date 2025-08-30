@@ -12,6 +12,7 @@ const flights = [
     stops: 0,
     refundable: true,
     layover: null,
+    layoverDuration: null,
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ const flights = [
     stops: 1,
     refundable: false,
     layover: "Hyderabad (HYD)",
+    layoverDuration: "1h 10m",
   },
   {
     id: 3,
@@ -40,6 +42,7 @@ const flights = [
     stops: 0,
     refundable: true,
     layover: null,
+    layoverDuration: null,
   },
 ];
 

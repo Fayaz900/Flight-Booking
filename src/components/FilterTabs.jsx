@@ -1,5 +1,3 @@
-import React from "react";
-
 const FilterTabs = ({ active, setActive }) => {
   const tabs = [
     { id: "cheapest", label: "Cheapest", price: "130.000" },

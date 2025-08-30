@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, Typography, Checkbox, Radio, Button } from "@material-tailwind/react";
 import { MdFlight, MdAttachMoney, MdAirlines, MdAccessTime } from "react-icons/md";
 
