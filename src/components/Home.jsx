@@ -1,136 +1,128 @@
 import { useState } from "react";
+import { Navbar } from "./Navbar";
+import { FlightFormModal } from "./FlightFormModal";
+import { useFlights } from "../components/hooks/useFlights";
 import FlightCard from "./FlightCard";
-import flights from "../data/flights";
-import FilterTabs from "./FilterTabs";
 import SidebarFilters from "./SidebarFilters";
-
+import FilterTabs from "./FilterTabs";
+import {
+  Button,
+  Select,
+  Option,
+  Card,
+  Typography,
+} from "@material-tailwind/react";
+import { MdAddCircleOutline } from "react-icons/md";
+import { FaSort } from "react-icons/fa";
 
 export const Home = () => {
-  const [activeTab, setActiveTab] = useState("cheapest");
-  const [filters, setFilters] = useState({
-    trip: "oneway",
-    direct: false,
-    oneStop: false,
-    twoStop: false,
-    departureRange: "",
+  const {
+    flights,
+    setFlights,
+    filters,
+    setFilters,
+    activeTab,
+    setActiveTab,
+    sortedFlights,
+  } = useFlights();
+
+  const [showModal, setShowModal] = useState(false);
+  const [newFlight, setNewFlight] = useState({
+    id: Date.now(),
+    airline: "",
+    logo: "",
+    from: "",
+    to: "",
+    price: 0,
+    duration: "",
+    departure: "",
+    arrival: "",
+    stops: 0,
     refundable: false,
-    nonRefundable: false,
-    airlines: [],
-    layoverRange: "",
-    layoverAirports: [],
-    priceRange: [0, 10000],
+    layover: null,
+    layoverDuration: null,
   });
 
-  // Filter Logic
-  const filteredFlights = flights.filter((f) => {
-    //Refundable / Non-refundable
-    if (filters.refundable && !f.refundable) return false;
-    if (filters.nonRefundable && f.refundable) return false;
-
-    if (filters.airlines.length > 0 && !filters.airlines.includes(f.airline)) return false;
-
-    if (f.price < filters.priceRange[0] || f.price > filters.priceRange[1]) return false;
-
-    if (filters.direct && f.stops !== 0) return false;
-    if (filters.oneStop && f.stops !== 1) return false;
-    if (filters.twoStop && f.stops < 2) return false;
-
-    if (filters.departureRange) {
-      const depHour = new Date(f.departure).getHours();
-      const [start, end] = filters.departureRange.split("-").map(Number);
-      if (depHour < start || depHour >= end) return false;
-    }
-
-    if (filters.layoverAirports.length > 0) {
-      if (!f.layover || !filters.layoverAirports.some((ap) => f.layover.includes(ap))) {
-        return false;
-      }
-    }
-
-    if (filters.layoverRange) {
-      let layoverHours = 0;
-
-      if (f.layoverDuration) {
-        // f.layoverDuration = "5h 30m"
-        const match = f.layoverDuration.match(/(\d+)h\s*(\d+)?m?/);
-        if (match) {
-          layoverHours = parseInt(match[1]) + (match[2] ? parseInt(match[2]) / 60 : 0);
-        }
-      }
-
-      const [min, max] =
-        filters.layoverRange === "12+"
-          ? [12, Infinity]
-          : filters.layoverRange.split("-").map(Number);
-
-      if (layoverHours < min || layoverHours > max) return false;
-    }
-
-    return true;
-  });
-
-  let sortedFlights = [...filteredFlights];
-
-  if (activeTab === "priceLow") {
-    sortedFlights.sort((a, b) => a.price - b.price);
-  } else if (activeTab === "priceHigh") {
-    sortedFlights.sort((a, b) => b.price - a.price);
-  } else if (activeTab === "time") {
-    sortedFlights.sort((a, b) => new Date(a.departure) - new Date(b.departure));
-  } else if (activeTab === "duration") {
-    const parseDuration = (d) => {
-      const [h, m] = d.replace("h", "").replace("m", "").split(" ");
-      return parseInt(h || 0) * 60 + parseInt(m || 0);
-    };
-    sortedFlights.sort((a, b) => parseDuration(a.duration) - parseDuration(b.duration));
-  }
+  const handleAddFlight = () => {
+    setFlights([...flights, { ...newFlight, id: Date.now() }]);
+    setShowModal(false);
+  };
 
   return (
-    <>
-      <div className="bg-gray-100 min-h-screen p-6">
-        {/* Header */}
-        <header className="bg-gradient-to-r from-cyan-500 to-teal-500 text-white p-4 rounded-xl flex justify-between items-center">
-          <h1 className="text-xl font-bold">AEROLINK</h1>
-          <nav className="flex gap-6">
-            <a href="#">Home</a>
-            <a href="#">My Booking</a>
-            <a href="#">Register</a>
-            <a href="#">Login</a>
-            <a href="#">Contact</a>
-          </nav>
-        </header>
+    <div className="bg-gray-50 min-h-screen">
+      {/* Navbar */}
+      <Navbar />
 
-        <div className="mt-6 max-w-7xl mx-auto grid grid-cols-[280px_1fr] gap-6">
-          {/* Sidebar */}
-          <SidebarFilters filters={filters} setFilters={setFilters} flights={flights} />
+      {/* Content */}
+      <div className="mt-6 max-w-7xl mx-auto grid grid-cols-[280px_1fr] gap-6 px-4">
+        {/* Sidebar */}
+        <SidebarFilters
+          filters={filters}
+          setFilters={setFilters}
+          flights={flights}
+        />
 
-          {/* Main */}
-          <div>
-            {/* Sort + Tabs */}
-            <div className="flex justify-between items-center mb-4">
-              <select
-                className="border px-3 py-2 rounded"
-                onChange={(e) => setActiveTab(e.target.value)}
+        {/* Right Section */}
+        <Card className="p-6 shadow-lg rounded-2xl">
+          {/* Top Controls */}
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            {/* Sort Dropdown */}
+            <div className="w-full sm:w-1/3">
+              <Select
+                label="Sort Flights"
+                icon={<FaSort className="h-5 w-5" />}
+                onChange={(val) => setActiveTab(val)}
+                value={activeTab}
               >
-                <option value="priceLow">Sort: Price Low → High</option>
-                <option value="priceHigh">Sort: Price High → Low</option>
-                <option value="time">Sort: Time</option>
-                <option value="duration">Sort: Duration</option>
-              </select>
-
+                <Option value="priceLow">💸 Price Low → High</Option>
+                <Option value="priceHigh">💰 Price High → Low</Option>
+                <Option value="time">🕑 Departure Time</Option>
+                <Option value="duration">⏳ Duration</Option>
+              </Select>
             </div>
-            <FilterTabs active={activeTab} setActive={setActiveTab} />
-            
-            {/* Flights */}
-            {sortedFlights.length > 0 ? (
-              sortedFlights.map(f => <FlightCard key={f.id} flight={f} />)
-            ) : (
-              <p className="text-gray-600 mt-6">No flights match your filters.</p>
-            )}
 
+            {/* Add Flight Button */}
+            <Button
+              color="cyan"
+              size="md"
+              className="flex items-center gap-2"
+              onClick={() => setShowModal(true)}
+            >
+              <MdAddCircleOutline size={20} />
+              Schedule Flight
+            </Button>
           </div>
-        </div>
+
+          {/* Filter Tabs */}
+          <FilterTabs active={activeTab} setActive={setActiveTab} />
+
+          {/* Flight Cards */}
+          {sortedFlights.length > 0 ? (
+            <div className="grid gap-4 mt-4">
+              {sortedFlights.map((f) => (
+                <FlightCard key={f.id} flight={f} />
+              ))}
+            </div>
+          ) : (
+            <Typography
+              variant="paragraph"
+              color="gray"
+              className="text-center mt-6"
+            >
+              No flights match your filters.
+            </Typography>
+          )}
+        </Card>
       </div>
-    </>
+
+      {/* Flight Form Modal */}
+      <FlightFormModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleAddFlight}
+        newFlight={newFlight}
+        setNewFlight={setNewFlight}
+      />
+    </div>
   );
 };

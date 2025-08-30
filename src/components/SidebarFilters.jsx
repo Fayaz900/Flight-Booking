@@ -1,5 +1,5 @@
-import { Card, Typography, Checkbox, Radio, Button } from "@material-tailwind/react";
-import { MdFlight, MdAttachMoney, MdAirlines, MdAccessTime } from "react-icons/md";
+import { Card, Typography, Checkbox, Radio, Button, IconButton } from "@material-tailwind/react";
+import { MdFlight, MdAttachMoney, MdAirlines, MdAccessTime, MdClear } from "react-icons/md";
 
 const SidebarFilters = ({ filters, setFilters, flights }) => {
   const handleChange = (e) => {
@@ -19,7 +19,10 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
     <Card className="w-72 bg-white p-5 rounded-2xl shadow-lg space-y-8">
       {/* Price Range */}
       <div>
-        <Typography variant="h6" className="flex items-center gap-2 text-gray-800 mb-3">
+        <Typography
+          variant="h6"
+          className="flex items-center gap-2 text-gray-800 mb-3"
+        >
           <MdAttachMoney className="text-green-600 text-xl" /> Price Range
         </Typography>
         <input
@@ -57,7 +60,10 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Trip Type */}
       <div>
-        <Typography variant="h6" className="flex items-center gap-2 text-gray-800 mb-3">
+        <Typography
+          variant="h6"
+          className="flex items-center gap-2 text-gray-800 mb-3"
+        >
           <MdFlight className="text-blue-600 text-xl" /> Trip Type
         </Typography>
         <div className="flex gap-3">
@@ -82,7 +88,9 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Stops */}
       <div>
-        <Typography variant="h6" className="text-gray-800 mb-3">Stops</Typography>
+        <Typography variant="h6" className="text-gray-800 mb-3">
+          Stops
+        </Typography>
         {["Direct", "1 Stop", "2+ Stops"].map((stop, i) => {
           const key = ["direct", "oneStop", "twoStop"][i];
           return (
@@ -102,9 +110,26 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Departure Time */}
       <div>
-        <Typography variant="h6" className="flex items-center gap-2 text-gray-800 mb-3">
-          <MdAccessTime className="text-orange-600 text-xl" /> Departure Time
-        </Typography>
+        <div className="flex justify-between items-center mb-3">
+          <Typography
+            variant="h6"
+            className="flex items-center gap-2 text-gray-800"
+          >
+            <MdAccessTime className="text-orange-600 text-xl" /> Departure Time
+          </Typography>
+          {filters.departureRange && (
+            <IconButton
+              size="sm"
+              color="red"
+              variant="text"
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, departureRange: "" }))
+              }
+            >
+              <MdClear size={18} />
+            </IconButton>
+          )}
+        </div>
         {["00-06", "06-12", "12-18", "18-24"].map((range) => (
           <Radio
             key={range}
@@ -120,7 +145,9 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Fare Type */}
       <div>
-        <Typography variant="h6" className="text-gray-800 mb-3">Fare Type</Typography>
+        <Typography variant="h6" className="text-gray-800 mb-3">
+          Fare Type
+        </Typography>
         <Checkbox
           label="Refundable"
           color="green"
@@ -139,10 +166,13 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Airlines */}
       <div>
-        <Typography variant="h6" className="flex items-center gap-2 text-gray-800 mb-3">
+        <Typography
+          variant="h6"
+          className="flex items-center gap-2 text-gray-800 mb-3"
+        >
           <MdAirlines className="text-purple-600 text-xl" /> Airlines
         </Typography>
-        {["Etihad Airways", "Qatar Airways", "IndiGo"].map((airline) => (
+        {["Etihad Airways", "Qatar Airways", "IndiGo","Emirates"].map((airline) => (
           <Checkbox
             key={airline}
             label={airline}
@@ -167,7 +197,23 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Layover Time */}
       <div>
-        <Typography variant="h6" className="text-gray-800 mb-3">Layover Time (Hours)</Typography>
+        <div className="flex justify-between items-center mb-3">
+          <Typography variant="h6" className="text-gray-800">
+            Layover Time (Hours)
+          </Typography>
+          {filters.layoverRange && (
+            <IconButton
+              size="sm"
+              color="red"
+              variant="text"
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, layoverRange: "" }))
+              }
+            >
+              <MdClear size={18} />
+            </IconButton>
+          )}
+        </div>
         {["0-4", "4-8", "8-12", "12+"].map((range) => (
           <Radio
             key={range}
@@ -183,7 +229,9 @@ const SidebarFilters = ({ filters, setFilters, flights }) => {
 
       {/* Layover Airports */}
       <div>
-        <Typography variant="h6" className="text-gray-800 mb-3">Layover Airports</Typography>
+        <Typography variant="h6" className="text-gray-800 mb-3">
+          Layover Airports
+        </Typography>
         {["Dubai", "Doha", "Hyderabad"].map((ap) => (
           <Checkbox
             key={ap}
